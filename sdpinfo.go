@@ -240,6 +240,7 @@ func (s *SDPInfo) String() string {
 		SessionId:      strconv.FormatInt(time.Now().UnixNano(), 10),
 		SessionVersion: s.version,
 		NetType:        "IN",
+		IpVer:          4,
 		Address:        "127.0.0.1",
 	}
 
