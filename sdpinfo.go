@@ -15,6 +15,7 @@ type SDPInfo struct {
 	candidates []*CandidateInfo // keep order
 	ice        *ICEInfo
 	dtls       *DTLSInfo
+	sdes       *SDESInfo
 }
 
 func NewSDPInfo() *SDPInfo {
@@ -117,6 +118,16 @@ func (s *SDPInfo) GetDTLS() *DTLSInfo {
 func (s *SDPInfo) SetDTLS(dtls *DTLSInfo) {
 
 	s.dtls = dtls
+}
+
+func (s *SDPInfo) GetSDES() *SDESInfo {
+
+	return s.sdes
+}
+
+func (s *SDPInfo) SetSDES(sdes *SDESInfo) {
+
+	s.sdes = sdes
 }
 
 func (s *SDPInfo) GetICE() *ICEInfo {
@@ -603,7 +614,12 @@ func (s *SDPInfo) Clone() *SDPInfo {
 		cloned.AddCandidate(candidate)
 	}
 	cloned.SetICE(s.GetICE().Clone())
-	cloned.SetDTLS(s.GetDTLS().Clone())
+	if s.GetDTLS() != nil {
+		cloned.SetDTLS(s.GetDTLS().Clone())
+	}
+	if s.GetSDES() != nil {
+		cloned.SetSDES(s.GetSDES().Clone())
+	}
 	return cloned
 }
 
@@ -647,7 +663,13 @@ func (s *SDPInfo) Unify() *SDPInfo {
 	}
 
 	cloned.SetICE(s.GetICE().Clone())
-	cloned.SetDTLS(s.GetDTLS().Clone())
+
+	if s.GetDTLS() != nil {
+		cloned.SetDTLS(s.GetDTLS().Clone())
+	}
+	if s.GetSDES() != nil {
+		cloned.SetSDES(s.GetSDES().Clone())
+	}
 
 	return cloned
 }

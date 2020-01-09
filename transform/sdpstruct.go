@@ -53,6 +53,13 @@ type FingerprintStruct struct {
 	Hash string `json:"hash,omitempty"`
 }
 
+type CryptoStruct struct {
+	Id            uint   `json:"id,omitempty"`
+	Suite         string `json:"suite,omitempty"`
+	Config        string `json:"config,omitempty"`
+	SessionConfig string `json:"sessionConfig,omitempty"`
+}
+
 type ExtStruct struct {
 	Value int    `json:"value,omitempty"`
 	Uri   string `json:"uri,omitempty"`
