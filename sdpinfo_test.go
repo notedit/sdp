@@ -253,5 +253,14 @@ func Test_SDPAnswer(t *testing.T) {
 	if answer.GetMedia("video") == nil {
 		t.Error("answer video error")
 	}
+}
 
+func BenchmarkParse(b *testing.B) {
+
+	for n := 0; n < b.N; n++ {
+		_, err := Parse(sdpstr)
+		if err != nil {
+			b.Error("parse error")
+		}
+	}
 }
