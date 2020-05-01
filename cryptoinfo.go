@@ -1,15 +1,15 @@
 package sdp
 
-type SDESInfo struct {
+type CryptoInfo struct {
 	tag           int
 	cipherSuite   string
 	keyParams     string
 	sessionParams string
 }
 
-func NewSDESInfo(tag int, cipherSuite string, keyParams string, sessionParams string) *SDESInfo {
+func NewCryptoInfo(tag int, cipherSuite string, keyParams string, sessionParams string) *CryptoInfo {
 
-	sdes := &SDESInfo{
+	sdes := &CryptoInfo{
 		tag:           tag,
 		cipherSuite:   cipherSuite,
 		keyParams:     keyParams,
@@ -19,8 +19,8 @@ func NewSDESInfo(tag int, cipherSuite string, keyParams string, sessionParams st
 	return sdes
 }
 
-func (s *SDESInfo) Clone() *SDESInfo {
-	sdes := &SDESInfo{
+func (s *CryptoInfo) Clone() *CryptoInfo {
+	sdes := &CryptoInfo{
 		tag:           s.tag,
 		cipherSuite:   s.cipherSuite,
 		keyParams:     s.keyParams,
@@ -29,18 +29,18 @@ func (s *SDESInfo) Clone() *SDESInfo {
 	return sdes
 }
 
-func (s *SDESInfo) GetTag() int {
+func (s *CryptoInfo) GetTag() int {
 	return s.tag
 }
 
-func (s *SDESInfo) GetCipherSuite() string {
+func (s *CryptoInfo) GetCipherSuite() string {
 	return s.cipherSuite
 }
 
-func (s *SDESInfo) GetKeyParams() string {
+func (s *CryptoInfo) GetKeyParams() string {
 	return s.keyParams
 }
 
-func (s *SDESInfo) GetSessionParams() string {
+func (s *CryptoInfo) GetSessionParams() string {
 	return s.sessionParams
 }

@@ -8,7 +8,7 @@ type TrackInfo struct {
 	id        string
 	mediaID   string
 	media     string // "audio" | "video"
-	ssrcs     []uint
+	ssrcs     []uint32
 	groups    []*SourceGroupInfo
 	encodings [][]*TrackEncodingInfo
 }
@@ -18,7 +18,7 @@ func NewTrackInfo(id, media string) *TrackInfo {
 	info := &TrackInfo{
 		id:        id,
 		media:     media,
-		ssrcs:     []uint{},
+		ssrcs:     []uint32{},
 		groups:    []*SourceGroupInfo{},
 		encodings: [][]*TrackEncodingInfo{},
 	}
@@ -31,7 +31,7 @@ func (t *TrackInfo) Clone() *TrackInfo {
 	cloned := &TrackInfo{
 		id:        t.id,
 		media:     t.media,
-		ssrcs:     make([]uint, len(t.ssrcs)),
+		ssrcs:     make([]uint32, len(t.ssrcs)),
 		groups:    make([]*SourceGroupInfo, 0),
 		encodings: make([][]*TrackEncodingInfo, len(t.encodings)),
 	}
@@ -67,12 +67,12 @@ func (t *TrackInfo) GetID() string {
 	return t.id
 }
 
-func (t *TrackInfo) AddSSRC(ssrc uint) {
+func (t *TrackInfo) AddSSRC(ssrc uint32) {
 
 	t.ssrcs = append(t.ssrcs, ssrc)
 }
 
-func (t *TrackInfo) GetSSRCS() []uint {
+func (t *TrackInfo) GetSSRCS() []uint32 {
 
 	return t.ssrcs
 }

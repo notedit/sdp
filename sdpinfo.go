@@ -15,7 +15,7 @@ type SDPInfo struct {
 	candidates []*CandidateInfo // keep order
 	ice        *ICEInfo
 	dtls       *DTLSInfo
-	sdes       *SDESInfo
+	crypto     *CryptoInfo
 }
 
 func NewSDPInfo() *SDPInfo {
@@ -120,15 +120,17 @@ func (s *SDPInfo) SetDTLS(dtls *DTLSInfo) {
 	s.dtls = dtls
 }
 
-func (s *SDPInfo) GetSDES() *SDESInfo {
+func (s *SDPInfo) GetCrypto() *CryptoInfo {
 
-	return s.sdes
+	return s.crypto
 }
 
-func (s *SDPInfo) SetSDES(sdes *SDESInfo) {
+func (s *SDPInfo) SetCrypto(crypto *CryptoInfo) {
 
-	s.sdes = sdes
+	s.crypto = crypto
 }
+
+
 
 func (s *SDPInfo) GetICE() *ICEInfo {
 
@@ -541,7 +543,7 @@ func (s *SDPInfo) String() string {
 						for _, group := range groups {
 							md.SsrcGroups = append(md.SsrcGroups, &transform.SsrcGroupStruct{
 								Semantics: group.GetSemantics(),
-								Ssrcs:     uintArrayToString(group.GetSSRCs(), " "),
+								Ssrcs:     uint32ArrayToString(group.GetSSRCs(), " "),
 							})
 						}
 						ssrcs := track.GetSSRCS()
@@ -566,7 +568,7 @@ func (s *SDPInfo) String() string {
 					for _, group := range groups {
 						md.SsrcGroups = append(md.SsrcGroups, &transform.SsrcGroupStruct{
 							Semantics: group.GetSemantics(),
-							Ssrcs:     uintArrayToString(group.GetSSRCs(), " "),
+							Ssrcs:     uint32ArrayToString(group.GetSSRCs(), " "),
 						})
 					}
 					ssrcs := track.GetSSRCS()
@@ -614,11 +616,12 @@ func (s *SDPInfo) Clone() *SDPInfo {
 		cloned.AddCandidate(candidate)
 	}
 	cloned.SetICE(s.GetICE().Clone())
+
 	if s.GetDTLS() != nil {
 		cloned.SetDTLS(s.GetDTLS().Clone())
 	}
-	if s.GetSDES() != nil {
-		cloned.SetSDES(s.GetSDES().Clone())
+	if s.GetCrypto() != nil {
+		cloned.SetCrypto(s.GetCrypto().Clone())
 	}
 	return cloned
 }
@@ -667,8 +670,8 @@ func (s *SDPInfo) Unify() *SDPInfo {
 	if s.GetDTLS() != nil {
 		cloned.SetDTLS(s.GetDTLS().Clone())
 	}
-	if s.GetSDES() != nil {
-		cloned.SetSDES(s.GetSDES().Clone())
+	if s.GetCrypto() != nil {
+		cloned.SetCrypto(s.GetCrypto().Clone())
 	}
 
 	return cloned
@@ -709,6 +712,31 @@ func Create(ice *ICEInfo, dtls *DTLSInfo, candidates []*CandidateInfo, capabilit
 
 	return sdpInfo
 }
+
+
+func Create2(capabilities map[string]*Capability) *SDPInfo {
+
+	sdpInfo := NewSDPInfo()
+	dyn := 96
+	for mType, capability := range capabilities {
+		media := MediaInfoCreate(mType, capability)
+		for _, codec := range media.GetCodecs() {
+			if codec.GetType() >= 96 {
+				dyn++
+				codec.SetType(dyn)
+			}
+			if codec.GetRTX() > 0 {
+				dyn++
+				codec.SetRTX(dyn)
+			}
+		}
+		sdpInfo.AddMedia(media)
+	}
+
+	return sdpInfo
+}
+
+
 
 func Parse(sdp string) (*SDPInfo, error) {
 
@@ -930,7 +958,7 @@ func Parse(sdp string) (*SDPInfo, error) {
 			mediaInfo.SetSimulcastInfo(simulcast)
 		}
 
-		sources := map[uint]*SourceInfo{}
+		sources := map[uint32]*SourceInfo{}
 
 		if md.Ssrcs != nil {
 			for _, ssrcAttr := range md.Ssrcs {
@@ -1044,10 +1072,10 @@ func Parse(sdp string) (*SDPInfo, error) {
 		if md.SsrcGroups != nil {
 			for _, ssrcGroupAttr := range md.SsrcGroups {
 				ssrcs := strings.Split(ssrcGroupAttr.Ssrcs, " ")
-				ssrcsint := []uint{}
+				ssrcsint := []uint32{}
 				for _, ssrcstr := range ssrcs {
 					ssrcint, _ := strconv.ParseUint(ssrcstr, 10, 32)
-					ssrcsint = append(ssrcsint, uint(ssrcint))
+					ssrcsint = append(ssrcsint, uint32(ssrcint))
 				}
 				group := NewSourceGroupInfo(ssrcGroupAttr.Semantics, ssrcsint)
 				ssrc := ssrcsint[0]

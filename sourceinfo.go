@@ -1,13 +1,13 @@
 package sdp
 
 type SourceInfo struct {
-	ssrc     uint
+	ssrc     uint32
 	cname    string
 	streamID string
 	trackID  string
 }
 
-func NewSourceInfo(ssrc uint) *SourceInfo {
+func NewSourceInfo(ssrc uint32) *SourceInfo {
 
 	return &SourceInfo{ssrc: ssrc}
 }
@@ -45,6 +45,6 @@ func (s *SourceInfo) SetTrackID(trackID string) {
 	s.trackID = trackID
 }
 
-func (s *SourceInfo) GetSSRC() uint {
+func (s *SourceInfo) GetSSRC() uint32 {
 	return s.ssrc
 }
