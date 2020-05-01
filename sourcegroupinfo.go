@@ -2,14 +2,14 @@ package sdp
 
 type SourceGroupInfo struct {
 	semantics string
-	ssrcs     []uint32
+	ssrcs     []uint
 }
 
-func NewSourceGroupInfo(semantics string, ssrcs []uint32) *SourceGroupInfo {
+func NewSourceGroupInfo(semantics string, ssrcs []uint) *SourceGroupInfo {
 
 	info := &SourceGroupInfo{
 		semantics: semantics,
-		ssrcs:     make([]uint32, len(ssrcs)),
+		ssrcs:     make([]uint, len(ssrcs)),
 	}
 
 	copy(info.ssrcs, ssrcs)
@@ -20,7 +20,7 @@ func (s *SourceGroupInfo) Clone() *SourceGroupInfo {
 
 	cloned := &SourceGroupInfo{
 		semantics: s.semantics,
-		ssrcs:     make([]uint32, len(s.ssrcs)),
+		ssrcs:     make([]uint, len(s.ssrcs)),
 	}
 
 	copy(cloned.ssrcs, s.ssrcs)
@@ -32,7 +32,7 @@ func (s *SourceGroupInfo) GetSemantics() string {
 	return s.semantics
 }
 
-func (s *SourceGroupInfo) GetSSRCs() []uint32 {
+func (s *SourceGroupInfo) GetSSRCs() []uint {
 
 	return s.ssrcs
 }

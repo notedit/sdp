@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func uint32ArrayToString(a []uint32, delim string) string {
+func uint32ArrayToString(a []uint, delim string) string {
 	return strings.Trim(strings.Join(strings.Split(fmt.Sprint(a), " "), delim), "[]")
 }
 

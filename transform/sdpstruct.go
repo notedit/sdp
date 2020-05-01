@@ -77,7 +77,7 @@ type SsrcGroupStruct struct {
 }
 
 type SsrcStruct struct {
-	Id        uint32 `json:"id,omitempty"`
+	Id        uint `json:"id,omitempty"`
 	Attribute string `json:"attribute,omitempty"`
 	Value     string `json:"value,omitempty"`
 }

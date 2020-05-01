@@ -958,7 +958,7 @@ func Parse(sdp string) (*SDPInfo, error) {
 			mediaInfo.SetSimulcastInfo(simulcast)
 		}
 
-		sources := map[uint32]*SourceInfo{}
+		sources := map[uint]*SourceInfo{}
 
 		if md.Ssrcs != nil {
 			for _, ssrcAttr := range md.Ssrcs {
@@ -1072,10 +1072,10 @@ func Parse(sdp string) (*SDPInfo, error) {
 		if md.SsrcGroups != nil {
 			for _, ssrcGroupAttr := range md.SsrcGroups {
 				ssrcs := strings.Split(ssrcGroupAttr.Ssrcs, " ")
-				ssrcsint := []uint32{}
+				ssrcsint := []uint{}
 				for _, ssrcstr := range ssrcs {
 					ssrcint, _ := strconv.ParseUint(ssrcstr, 10, 32)
-					ssrcsint = append(ssrcsint, uint32(ssrcint))
+					ssrcsint = append(ssrcsint, uint(ssrcint))
 				}
 				group := NewSourceGroupInfo(ssrcGroupAttr.Semantics, ssrcsint)
 				ssrc := ssrcsint[0]
