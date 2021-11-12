@@ -188,7 +188,7 @@ func Test_Parse(t *testing.T) {
 		t.Error("track parse error")
 	}
 
-	if track.GetMedia() != "audio" {
+	if track.GetMediaType() != "audio" {
 		t.Error("track can not get media")
 	}
 

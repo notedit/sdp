@@ -6,18 +6,18 @@ import (
 
 type TrackInfo struct {
 	id        string
-	mediaID   string
-	media     string // "audio" | "video"
+	mID       string
+	mediaType string // "audio" | "video"
 	ssrcs     []uint
 	groups    []*SourceGroupInfo
 	encodings [][]*TrackEncodingInfo
 }
 
-func NewTrackInfo(id, media string) *TrackInfo {
+func NewTrackInfo(id, mediaType string) *TrackInfo {
 
 	info := &TrackInfo{
 		id:        id,
-		media:     media,
+		mediaType: mediaType,
 		ssrcs:     []uint{},
 		groups:    []*SourceGroupInfo{},
 		encodings: [][]*TrackEncodingInfo{},
@@ -30,7 +30,8 @@ func (t *TrackInfo) Clone() *TrackInfo {
 
 	cloned := &TrackInfo{
 		id:        t.id,
-		media:     t.media,
+		mID:       t.mID,
+		mediaType: t.mediaType,
 		ssrcs:     make([]uint, len(t.ssrcs)),
 		groups:    make([]*SourceGroupInfo, 0),
 		encodings: make([][]*TrackEncodingInfo, len(t.encodings)),
@@ -47,19 +48,19 @@ func (t *TrackInfo) Clone() *TrackInfo {
 	return cloned
 }
 
-func (t *TrackInfo) GetMedia() string {
+func (t *TrackInfo) GetMediaType() string {
 
-	return t.media
+	return t.mediaType
 }
 
-func (t *TrackInfo) SetMediaID(mediaID string) {
+func (t *TrackInfo) SetMID(mediaID string) {
 
-	t.mediaID = mediaID
+	t.mID = mediaID
 }
 
-func (t *TrackInfo) GetMediaID() string {
+func (t *TrackInfo) GetMID() string {
 
-	return t.mediaID
+	return t.mID
 }
 
 func (t *TrackInfo) GetID() string {

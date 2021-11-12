@@ -193,7 +193,7 @@ func (s *SDPInfo) RemoveAllStreams() {
 func (s *SDPInfo) GetTrackByMediaID(mid string) *TrackInfo {
 	for _, stream := range s.streams {
 		for _, track := range stream.GetTracks() {
-			if track.GetMediaID() == mid {
+			if track.GetMID() == mid {
 				return track
 			}
 		}
@@ -205,7 +205,7 @@ func (s *SDPInfo) GetStreamByMediaID(mid string) *StreamInfo {
 
 	for _, stream := range s.streams {
 		for _, track := range stream.GetTracks() {
-			if track.GetMediaID() == mid {
+			if track.GetMID() == mid {
 				return stream
 			}
 		}
@@ -344,21 +344,21 @@ func (s *SDPInfo) String() string {
 
 			if "video" == strings.ToLower(media.GetType()) {
 				mediaMap.Rtp = append(mediaMap.Rtp, &transform.RtpStruct{
-					Payload: codec.GetType(),
+					Payload: codec.GetPayload(),
 					Codec:   strings.ToUpper(codec.GetCodec()),
 					Rate:    90000,
 				})
 			} else {
 				if "opus" == strings.ToLower(codec.GetCodec()) {
 					mediaMap.Rtp = append(mediaMap.Rtp, &transform.RtpStruct{
-						Payload:  codec.GetType(),
+						Payload:  codec.GetPayload(),
 						Codec:    codec.GetCodec(),
 						Rate:     48000,
 						Encoding: 2,
 					})
 				} else {
 					mediaMap.Rtp = append(mediaMap.Rtp, &transform.RtpStruct{
-						Payload: codec.GetType(),
+						Payload: codec.GetPayload(),
 						Codec:   codec.GetCodec(),
 						Rate:    8000,
 					})
@@ -367,7 +367,7 @@ func (s *SDPInfo) String() string {
 
 			for _, rtcpfb := range codec.GetRTCPFeedbacks() {
 				mediaMap.RtcpFb = append(mediaMap.RtcpFb, &transform.RtcpFbStruct{
-					Payload: codec.GetType(),
+					Payload: codec.GetPayload(),
 					Type:    rtcpfb.GetID(),
 					Subtype: strings.Join(rtcpfb.GetParams(), " "),
 				})
@@ -381,7 +381,7 @@ func (s *SDPInfo) String() string {
 				})
 				mediaMap.Fmtp = append(mediaMap.Fmtp, &transform.FmtpStruct{
 					Payload: codec.GetRTX(),
-					Config:  "apt=" + strconv.Itoa(codec.GetType()),
+					Config:  "apt=" + strconv.Itoa(codec.GetPayload()),
 				})
 			}
 
@@ -390,7 +390,7 @@ func (s *SDPInfo) String() string {
 			if params != nil && len(params) > 0 {
 
 				fmtp := &transform.FmtpStruct{
-					Payload: codec.GetType(),
+					Payload: codec.GetPayload(),
 					Config:  "",
 				}
 
@@ -537,8 +537,8 @@ func (s *SDPInfo) String() string {
 		for _, track := range stream.GetTracks() {
 			for _, md := range sdpMap.Media {
 				// check if it is unified or plan b
-				if track.GetMediaID() != "" {
-					if track.GetMediaID() == md.Mid {
+				if track.GetMID() != "" {
+					if track.GetMID() == md.Mid {
 						groups := track.GetSourceGroupS()
 						for _, group := range groups {
 							md.SsrcGroups = append(md.SsrcGroups, &transform.SsrcGroupStruct{
@@ -562,7 +562,7 @@ func (s *SDPInfo) String() string {
 						md.Msid = stream.GetID() + " " + track.GetID()
 						break
 					}
-				} else if strings.ToLower(md.Type) == strings.ToLower(track.GetMedia()) {
+				} else if strings.ToLower(md.Type) == strings.ToLower(track.GetMediaType()) {
 
 					groups := track.GetSourceGroupS()
 					for _, group := range groups {
@@ -645,18 +645,18 @@ func (s *SDPInfo) Unify() *SDPInfo {
 		clonedStream := stream.Clone()
 		for _, clonedTrack := range clonedStream.GetTracks() {
 			var clonedMedia *MediaInfo
-			if len(medias[clonedTrack.GetMedia()]) == 0 {
-				media := s.GetMedia(clonedTrack.GetMedia())
+			if len(medias[clonedTrack.GetMediaType()]) == 0 {
+				media := s.GetMedia(clonedTrack.GetMediaType())
 				clonedMedia = media.Clone()
 				clonedMedia.SetID(clonedTrack.GetID())
 				cloned.AddMedia(clonedMedia)
 			} else {
-				mediaList := medias[clonedTrack.GetMedia()]
+				mediaList := medias[clonedTrack.GetMediaType()]
 				clonedMedia = mediaList[len(mediaList)-1]
 				mediaList = mediaList[:len(mediaList)-1]
-				medias[clonedTrack.GetMedia()] = mediaList
+				medias[clonedTrack.GetMediaType()] = mediaList
 			}
-			clonedTrack.SetMediaID(clonedMedia.GetID())
+			clonedTrack.SetMID(clonedMedia.GetID())
 		}
 		cloned.AddStream(clonedStream)
 	}
@@ -698,9 +698,9 @@ func Create(ice *ICEInfo, dtls *DTLSInfo, candidates []*CandidateInfo, capabilit
 	for mType, capability := range capabilities {
 		media := MediaInfoCreate(mType, capability)
 		for _, codec := range media.GetCodecs() {
-			if codec.GetType() >= 96 {
+			if codec.GetPayload() >= 96 {
 				dyn++
-				codec.SetType(dyn)
+				codec.SetPayload(dyn)
 			}
 			if codec.GetRTX() > 0 {
 				dyn++
@@ -721,9 +721,9 @@ func Create2(capabilities map[string]*Capability) *SDPInfo {
 	for mType, capability := range capabilities {
 		media := MediaInfoCreate(mType, capability)
 		for _, codec := range media.GetCodecs() {
-			if codec.GetType() >= 96 {
+			if codec.GetPayload() >= 96 {
 				dyn++
-				codec.SetType(dyn)
+				codec.SetPayload(dyn)
 			}
 			if codec.GetRTX() > 0 {
 				dyn++
@@ -995,7 +995,7 @@ func Parse(sdp string) (*SDPInfo, error) {
 
 					if track == nil {
 						track = NewTrackInfo(trackId, media)
-						track.SetMediaID(mid)
+						track.SetMID(mid)
 						track.SetEncodings(encodings)
 						stream.AddTrack(track)
 					}
@@ -1025,7 +1025,7 @@ func Parse(sdp string) (*SDPInfo, error) {
 
 			if track == nil {
 				track = NewTrackInfo(trackId, media)
-				track.SetMediaID(mid)
+				track.SetMID(mid)
 				track.SetEncodings(encodings)
 				stream.AddTrack(track)
 			}
@@ -1060,7 +1060,7 @@ func Parse(sdp string) (*SDPInfo, error) {
 
 				if track == nil {
 					track = NewTrackInfo(trackId, media)
-					track.SetMediaID(mid)
+					track.SetMID(mid)
 					track.SetEncodings(encodings)
 					stream.AddTrack(track)
 				}

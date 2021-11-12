@@ -82,7 +82,7 @@ func (m *MediaInfo) AddRID(ridInfo *RIDInfo) {
 
 func (m *MediaInfo) AddCodec(codecInfo *CodecInfo) {
 
-	m.codecs[codecInfo.GetType()] = codecInfo
+	m.codecs[codecInfo.GetPayload()] = codecInfo
 }
 
 func (m *MediaInfo) SetCodecs(codecs map[int]*CodecInfo) {
@@ -104,7 +104,7 @@ func (m *MediaInfo) GetCodec(codec string) *CodecInfo {
 func (m *MediaInfo) GetCodecForType(pt int) *CodecInfo {
 
 	for _, codecInfo := range m.codecs {
-		if codecInfo.GetType() == pt {
+		if codecInfo.GetPayload() == pt {
 			return codecInfo
 		}
 	}
@@ -206,7 +206,7 @@ func (m *MediaInfo) Answer(supportedMedia *MediaInfo) *MediaInfo {
 				continue
 			}
 			cloned := supported.Clone()
-			cloned.SetType(codec.GetType())
+			cloned.SetPayload(codec.GetPayload())
 			if cloned.HasRTX() {
 				cloned.SetRTX(codec.GetRTX())
 			}
@@ -284,7 +284,7 @@ func (m *MediaInfo) AnswerCapability(cap *Capability) *MediaInfo {
 				continue
 			}
 			cloned := supported.Clone()
-			cloned.SetType(codec.GetType())
+			cloned.SetPayload(codec.GetPayload())
 			if cloned.HasRTX() {
 				cloned.SetRTX(codec.GetRTX())
 			}

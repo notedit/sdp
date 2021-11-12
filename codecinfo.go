@@ -6,17 +6,17 @@ import (
 
 type CodecInfo struct {
 	codec   string
-	ctype   int
+	payload int
 	rtx     int
 	params  map[string]string
 	rtcpfbs []*RTCPFeedbackInfo
 }
 
-func NewCodecInfo(codec string, ctype int) *CodecInfo {
+func NewCodecInfo(codec string, payload int) *CodecInfo {
 
 	codecInfo := &CodecInfo{
 		codec:   codec,
-		ctype:   ctype,
+		payload: payload,
 		rtx:     0,
 		params:  map[string]string{},
 		rtcpfbs: []*RTCPFeedbackInfo{},
@@ -29,7 +29,7 @@ func (c *CodecInfo) Clone() *CodecInfo {
 
 	codecInfo := &CodecInfo{
 		codec:   c.codec,
-		ctype:   c.ctype,
+		payload: c.payload,
 		rtx:     c.rtx,
 		params:  make(map[string]string),
 		rtcpfbs: []*RTCPFeedbackInfo{},
@@ -51,12 +51,12 @@ func (c *CodecInfo) SetRTX(rtx int) {
 	c.rtx = rtx
 }
 
-func (c *CodecInfo) GetType() int {
-	return c.ctype
+func (c *CodecInfo) GetPayload() int {
+	return c.payload
 }
 
-func (c *CodecInfo) SetType(ctype int) {
-	c.ctype = ctype
+func (c *CodecInfo) SetPayload(payload int) {
+	c.payload = payload
 }
 
 func (c *CodecInfo) GetParams() map[string]string {
