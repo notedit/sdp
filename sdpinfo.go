@@ -130,8 +130,6 @@ func (s *SDPInfo) SetCrypto(crypto *CryptoInfo) {
 	s.crypto = crypto
 }
 
-
-
 func (s *SDPInfo) GetICE() *ICEInfo {
 
 	return s.ice
@@ -306,7 +304,11 @@ func (s *SDPInfo) String() string {
 
 		mediaMap.Mid = media.GetID()
 
-		bundleMids = append(bundleMids, media.GetID())
+		if media.GetDirection() == INACTIVE {
+			mediaMap.Port = 0
+		} else {
+			bundleMids = append(bundleMids, media.GetID())
+		}
 
 		if media.GetBitrate() > 0 {
 			mediaMap.Bandwidth = append(mediaMap.Bandwidth, &transform.BandwithStruct{
@@ -713,7 +715,6 @@ func Create(ice *ICEInfo, dtls *DTLSInfo, candidates []*CandidateInfo, capabilit
 	return sdpInfo
 }
 
-
 func Create2(capabilities map[string]*Capability) *SDPInfo {
 
 	sdpInfo := NewSDPInfo()
@@ -736,8 +737,6 @@ func Create2(capabilities map[string]*Capability) *SDPInfo {
 	return sdpInfo
 }
 
-
-
 func Parse(sdp string) (*SDPInfo, error) {
 
 	sdpMap, err := transform.Parse(sdp)
@@ -754,6 +753,10 @@ func Parse(sdp string) (*SDPInfo, error) {
 
 		media := md.Type
 		mid := md.Mid
+
+		if len(mid) == 0 {
+			continue
+		}
 
 		mediaInfo := NewMediaInfo(mid, media)
 
