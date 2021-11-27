@@ -283,7 +283,7 @@ func (s *SDPInfo) String() string {
 
 		mediaMap := &transform.MediaStruct{
 			Type:       media.GetType(),
-			Port:       9,
+			Port:       media.GetPort(),
 			Protocal:   "UDP/TLS/RTP/SAVP",
 			Fmtp:       []*transform.FmtpStruct{},
 			Rtp:        []*transform.RtpStruct{},
@@ -306,7 +306,9 @@ func (s *SDPInfo) String() string {
 
 		if media.GetDirection() == INACTIVE {
 			mediaMap.Port = 0
-		} else {
+		}
+
+		if media.GetPort() != 0 {
 			bundleMids = append(bundleMids, media.GetID())
 		}
 
@@ -809,6 +811,7 @@ func Parse(sdp string) (*SDPInfo, error) {
 		}
 
 		mediaInfo.SetDirection(direction)
+		mediaInfo.SetPort(md.Port)
 
 		apts := map[int]int{}
 

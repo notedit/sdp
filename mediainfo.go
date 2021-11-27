@@ -8,6 +8,7 @@ type MediaInfo struct {
 	id            string
 	mtype         string // "audio" | "video"
 	direction     Direction
+	port          int
 	extensions    map[int]string     // Add rtp header extension support
 	codecs        map[int]*CodecInfo // key: pt   value:  codec info
 	rids          map[string]*RIDInfo
@@ -22,6 +23,7 @@ func NewMediaInfo(id string, mtype string) *MediaInfo {
 		id:         id,
 		mtype:      mtype,
 		direction:  SENDRECV,
+		port:       9,
 		extensions: map[int]string{},
 		codecs:     map[int]*CodecInfo{},
 		rids:       map[string]*RIDInfo{},
@@ -68,6 +70,16 @@ func (m *MediaInfo) GetID() string {
 func (m *MediaInfo) SetID(id string) {
 
 	m.id = id
+}
+
+func (m *MediaInfo) GetPort() int {
+
+	return m.port
+}
+
+func (m *MediaInfo) SetPort(port int) {
+
+	m.port = port
 }
 
 func (m *MediaInfo) AddExtension(id int, name string) {
@@ -269,6 +281,12 @@ func (m *MediaInfo) AnswerCapability(cap *Capability) *MediaInfo {
 		rtcpfbs = append(rtcpfbs, NewRTCPFeedbackInfo(rtcpfb.ID, rtcpfb.Params))
 	}
 	codecs := CodecMapFromNames(cap.Codecs, cap.Rtx, rtcpfbs)
+
+	// Only set this when port == 0
+	// fix transceiver.stop() bug
+	if m.GetPort() == 0 {
+		answer.SetPort(m.port)
+	}
 
 	for _, codec := range m.codecs {
 		// If we support this codec
