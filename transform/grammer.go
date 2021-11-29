@@ -333,6 +333,15 @@ var rulesMap map[byte][]*Rule = map[byte][]*Rule{
 			Types:  []rune{'d'},
 			Format: "maxptime:%d",
 		},
+		// a=bundle-only
+		&Rule{
+			Name:   "bundleOnly",
+			Push:   "",
+			Reg:    regexp.MustCompile("^(bundle-only)"),
+			Names:  []string{},
+			Types:  []rune{'s'},
+			Format: "%s",
+		},
 		// a=sendrecv
 		&Rule{
 			Name:   "direction",

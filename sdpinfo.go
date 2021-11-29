@@ -804,6 +804,10 @@ func Parse(sdp string) (*SDPInfo, error) {
 
 		sdpInfo.SetDTLS(NewDTLSInfo(setup, remoteHash, remoteFingerprint))
 
+		if md.BundleOnly != "" && md.Port == 0 {
+			md.Port = 9
+		}
+
 		direction := SENDRECV
 
 		if md.Direction != "" {
