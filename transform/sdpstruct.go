@@ -132,6 +132,7 @@ type MediaStruct struct {
 	Mid         string             `json:"mid,omitempty"`
 	Msid        string             `json:"msid,omitempty"`
 	Ext         []*ExtStruct       `json:"ext,omitempty"`
+	BundleOnly  string             `json:"bundleOnly,omitempty"`
 	Direction   string             `json:"direction,omitempty"`
 	RtcpRsize   string             `json:"rtcpRsize,omitempty"`
 	RtcpMux     string             `json:"rtcpMux,omitempty"`
