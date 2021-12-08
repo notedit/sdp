@@ -968,7 +968,7 @@ func Parse(sdp string) (*SDPInfo, error) {
 			mediaInfo.SetSimulcastInfo(simulcast)
 		}
 
-		sources := map[uint]*SourceInfo{}
+		sources := []*SourceInfo{}
 
 		if md.Ssrcs != nil {
 			for _, ssrcAttr := range md.Ssrcs {
@@ -976,11 +976,16 @@ func Parse(sdp string) (*SDPInfo, error) {
 				key := ssrcAttr.Attribute
 				value := ssrcAttr.Value
 
-				source, ok := sources[ssrc]
-
-				if !ok {
+				var source *SourceInfo
+				for _, sourceInfo := range sources {
+					if sourceInfo.ssrc == ssrc {
+						source = sourceInfo
+						break
+					}
+				}
+				if source == nil {
 					source = NewSourceInfo(ssrc)
-					sources[ssrc] = source
+					sources = append(sources, source)
 				}
 
 				if strings.ToLower(key) == "cname" {
@@ -1040,17 +1045,17 @@ func Parse(sdp string) (*SDPInfo, error) {
 				stream.AddTrack(track)
 			}
 
-			for ssrc, source := range sources {
+			for _, source := range sources {
 
 				if source.GetStreamID() == "" {
 					source.SetStreamID(streamId)
 					source.SetTrackID(trackId)
-					track.AddSSRC(ssrc)
+					track.AddSSRC(source.ssrc)
 				}
 			}
 		}
 
-		for ssrc, source := range sources {
+		for _, source := range sources {
 
 			if source.GetStreamID() == "" {
 				streamId := source.GetCName()
@@ -1075,7 +1080,7 @@ func Parse(sdp string) (*SDPInfo, error) {
 					stream.AddTrack(track)
 				}
 
-				track.AddSSRC(ssrc)
+				track.AddSSRC(source.ssrc)
 			}
 		}
 
@@ -1089,11 +1094,14 @@ func Parse(sdp string) (*SDPInfo, error) {
 				}
 				group := NewSourceGroupInfo(ssrcGroupAttr.Semantics, ssrcsint)
 				ssrc := ssrcsint[0]
-				source := sources[ssrc]
-
-				streamInfo := sdpInfo.GetStream(source.GetStreamID())
-				if streamInfo != nil && streamInfo.GetTrack(source.GetTrackID()) != nil {
-					streamInfo.GetTrack(source.GetTrackID()).AddSourceGroup(group)
+				for _, source := range sources{
+					if source.ssrc == ssrc {
+						streamInfo := sdpInfo.GetStream(source.GetStreamID())
+						if streamInfo != nil && streamInfo.GetTrack(source.GetTrackID()) != nil {
+							streamInfo.GetTrack(source.GetTrackID()).AddSourceGroup(group)
+						}
+						break
+					}
 				}
 			}
 		}
