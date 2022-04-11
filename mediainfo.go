@@ -15,6 +15,8 @@ type MediaInfo struct {
 	simulcast     bool
 	simulcastInfo *SimulcastInfo
 	bitrate       int
+	Protocal      string
+	Payloads      string
 }
 
 func NewMediaInfo(id string, mtype string) *MediaInfo {

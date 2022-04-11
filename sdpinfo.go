@@ -231,6 +231,8 @@ func (s *SDPInfo) Answer(ice *ICEInfo, dtls *DTLSInfo, candidates []*CandidateIn
 		supported := medias[media.GetType()]
 		if supported != nil {
 			answer := media.AnswerCapability(supported)
+			answer.Payloads = media.Payloads
+			answer.Protocal = media.Protocal
 			sdpInfo.AddMedia(answer)
 		}
 	}
@@ -284,7 +286,7 @@ func (s *SDPInfo) String() string {
 		mediaMap := &transform.MediaStruct{
 			Type:       media.GetType(),
 			Port:       media.GetPort(),
-			Protocal:   "UDP/TLS/RTP/SAVP",
+			Protocal:   media.Protocal, // "UDP/TLS/RTP/SAVP",
 			Fmtp:       []*transform.FmtpStruct{},
 			Rtp:        []*transform.RtpStruct{},
 			RtcpFb:     []*transform.RtcpFbStruct{},
@@ -422,7 +424,15 @@ func (s *SDPInfo) String() string {
 			payloads = append(payloads, rtp.Payload)
 		}
 
-		mediaMap.Payloads = intArrayToString(payloads, " ")
+		if strings.ToLower(media.mtype) == "application" {
+			mediaMap.Payloads = media.Payloads
+			mediaMap.SctpPort = 5000
+			mediaMap.SctpMaxSize = 256 * 1024
+			mediaMap.RtcpMux = ""
+			mediaMap.RtcpRsize = ""
+		} else  {
+			mediaMap.Payloads = intArrayToString(payloads, " ")
+		}
 
 		for id, uri := range media.GetExtensions() {
 
@@ -761,6 +771,8 @@ func Parse(sdp string) (*SDPInfo, error) {
 		}
 
 		mediaInfo := NewMediaInfo(mid, media)
+		mediaInfo.Payloads = md.Payloads
+		mediaInfo.Protocal = md.Protocal
 
 		ufrag := md.IceUfrag
 		pwd := md.IcePwd

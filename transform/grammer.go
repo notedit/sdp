@@ -535,6 +535,32 @@ var rulesMap map[byte][]*Rule = map[byte][]*Rule{
 				}
 			},
 		},
+
+		// a=sctp-port:5000
+		&Rule{
+			Name:   "sctp-port",
+			Push:   "",
+			Reg:    regexp.MustCompile("^sctp-port:(\\d+)"),
+			Names:  []string{},
+			Types:  []rune{'d'},
+			Format: "",
+			FormatFunc: func(obj *gabs.Container) string {
+					return "sctp-port:%d"
+			},
+		},
+
+		// a=max-message-size:262144
+		&Rule{
+			Name:   "sctp-max-message-size",
+			Push:   "",
+			Reg:    regexp.MustCompile("^max-message-size:(\\d+)"),
+			Names:  []string{},
+			Types:  []rune{'d'},
+			Format: "",
+			FormatFunc: func(obj *gabs.Container) string {
+				return "max-message-size:%d"
+			},
+		},
 		// a=x-google-flag:conference
 		&Rule{
 			Name:   "xGoogleFlag",

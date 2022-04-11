@@ -143,6 +143,8 @@ type MediaStruct struct {
 	Candidates  []*CandidateStruct `json:"candidates,omitempty"`
 	Bandwidth   []*BandwithStruct  `json:"bandwidth,omitempty"`
 	Simulcast   *SimulcastStruct   `json:"simulcast,omitempty"`
+	SctpPort    int                `json:"sctp-port,omitempty"`
+	SctpMaxSize int                `json:"sctp-max-message-size,omitempty"`
 }
 
 type SdpStruct struct {
