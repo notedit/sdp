@@ -141,9 +141,9 @@ func (s *SDPInfo) SetICE(ice *ICEInfo) {
 }
 
 func (s *SDPInfo) AddCandidate(candidate *CandidateInfo) {
-
-	// todo check
-	s.candidates = append(s.candidates, candidate)
+	if candidate != nil {
+		s.candidates = append(s.candidates, candidate)
+	}
 }
 
 func (s *SDPInfo) AddCandidates(candidates []*CandidateInfo) {
@@ -209,6 +209,32 @@ func (s *SDPInfo) GetStreamByMediaID(mid string) *StreamInfo {
 		}
 	}
 	return nil
+}
+
+func (s *SDPInfo) GetVideoTracks() []*TrackInfo {
+
+	tracks := []*TrackInfo{}
+	for _, stream := range s.streams {
+		for _, track := range stream.GetTracks() {
+			if strings.ToLower(track.GetMediaType()) == "video" {
+				tracks = append(tracks, track)
+			}
+		}
+	}
+	return tracks
+}
+
+func (s *SDPInfo) GetAudioTracks() []*TrackInfo {
+
+	tracks := []*TrackInfo{}
+	for _, stream := range s.streams {
+		for _, track := range stream.GetTracks() {
+			if strings.ToLower(track.GetMediaType()) == "audio" {
+				tracks = append(tracks, track)
+			}
+		}
+	}
+	return tracks
 }
 
 func (s *SDPInfo) Answer(ice *ICEInfo, dtls *DTLSInfo, candidates []*CandidateInfo, medias map[string]*Capability) *SDPInfo {
@@ -430,7 +456,7 @@ func (s *SDPInfo) String() string {
 			mediaMap.SctpMaxSize = 256 * 1024
 			mediaMap.RtcpMux = ""
 			mediaMap.RtcpRsize = ""
-		} else  {
+		} else {
 			mediaMap.Payloads = intArrayToString(payloads, " ")
 		}
 
@@ -1106,7 +1132,7 @@ func Parse(sdp string) (*SDPInfo, error) {
 				}
 				group := NewSourceGroupInfo(ssrcGroupAttr.Semantics, ssrcsint)
 				ssrc := ssrcsint[0]
-				for _, source := range sources{
+				for _, source := range sources {
 					if source.ssrc == ssrc {
 						streamInfo := sdpInfo.GetStream(source.GetStreamID())
 						if streamInfo != nil && streamInfo.GetTrack(source.GetTrackID()) != nil {
