@@ -145,6 +145,7 @@ type MediaStruct struct {
 	Simulcast   *SimulcastStruct   `json:"simulcast,omitempty"`
 	SctpPort    int                `json:"sctp-port,omitempty"`
 	SctpMaxSize int                `json:"sctp-max-message-size,omitempty"`
+	SctpMap     *SctpMapStuct      `json:"sctpmap,omitempty"`
 }
 
 type SdpStruct struct {
@@ -158,4 +159,10 @@ type SdpStruct struct {
 	Fingerprint  *FingerprintStruct  `json:"fingerprint,omitempty"`
 	Connection   *ConnectionStruct   `json:"connection,omitempty"`
 	Icelite      string              `json:"icelite,omitempty"`
+}
+
+type SctpMapStuct struct {
+	Port           int       `json:"sctpmapNumber"`
+	App            string    `json:"app"`
+	MessageSize    int       `json:"maxMessageSize"`
 }
