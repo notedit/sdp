@@ -529,9 +529,9 @@ var rulesMap map[byte][]*Rule = map[byte][]*Rule{
 			Format: "",
 			FormatFunc: func(obj *gabs.Container) string {
 				if hasValue(obj, "maxMessageSize") {
-					return "sctpmap:%s %s %s"
+					return "sctpmap:%d %s %d"
 				} else {
-					return "sctpmap:%s %s"
+					return "sctpmap:%d %s"
 				}
 			},
 		},

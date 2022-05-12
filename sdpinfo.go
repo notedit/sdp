@@ -425,6 +425,11 @@ func (s *SDPInfo) String() string {
 		}
 
 		if strings.ToLower(media.mtype) == "application" {
+			mediaMap.SctpMap = &transform.SctpMapStuct{
+				5000,
+				"webrtc-datachannel",
+				1024,
+			}
 			mediaMap.Payloads = media.Payloads
 			mediaMap.SctpPort = 5000
 			mediaMap.SctpMaxSize = 256 * 1024
