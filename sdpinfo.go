@@ -431,7 +431,7 @@ func (s *SDPInfo) String() string {
 				1024,
 			}
 			mediaMap.Payloads = media.Payloads
-			mediaMap.SctpPort = 5000
+			// mediaMap.SctpPort = 5000
 			mediaMap.SctpMaxSize = 256 * 1024
 			mediaMap.RtcpMux = ""
 			mediaMap.RtcpRsize = ""
