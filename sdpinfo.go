@@ -826,18 +826,17 @@ func Parse(sdp string) (*SDPInfo, error) {
 			sdpInfo.AddCandidate(candidateInfo)
 		}
 
-		var fingerpirnt *transform.FingerprintStruct
+		var remoteHash, remoteFingerprint string
 
 		if sdpMap.Fingerprint != nil {
-			fingerpirnt = sdpMap.Fingerprint
+			remoteHash = sdpMap.Fingerprint.Type
+			remoteFingerprint = sdpMap.Fingerprint.Hash
 		}
 
 		if md.Fingerprint != nil {
-			fingerpirnt = md.Fingerprint
+			remoteHash = md.Fingerprint.Type
+			remoteFingerprint = md.Fingerprint.Hash
 		}
-
-		remoteHash := fingerpirnt.Type
-		remoteFingerprint := fingerpirnt.Hash
 
 		setup := SETUPACTPASS
 
