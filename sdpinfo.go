@@ -385,14 +385,14 @@ func (s *SDPInfo) String() string {
 					mediaMap.Rtp = append(mediaMap.Rtp, &transform.RtpStruct{
 						Payload:  codec.GetPayload(),
 						Codec:    codec.GetCodec(),
-						Rate:     48000,
+						Rate:     codec.GetRate(),
 						Encoding: 2,
 					})
 				} else {
 					mediaMap.Rtp = append(mediaMap.Rtp, &transform.RtpStruct{
 						Payload: codec.GetPayload(),
 						Codec:   codec.GetCodec(),
-						Rate:    8000,
+						Rate:    codec.GetRate(),
 					})
 				}
 			}
@@ -865,6 +865,7 @@ func Parse(sdp string) (*SDPInfo, error) {
 
 			payload := fmt.Payload
 			codec := fmt.Codec
+			rate := fmt.Rate
 
 			if "RED" == strings.ToUpper(codec) || "ULPFEC" == strings.ToUpper(codec) {
 				continue
@@ -893,7 +894,7 @@ func Parse(sdp string) (*SDPInfo, error) {
 					apts[aptint] = payload
 				}
 			} else {
-				codecInfo := NewCodecInfo(codec, payload)
+				codecInfo := NewCodecInfo(codec, payload, rate)
 				codecInfo.AddParams(params)
 				mediaInfo.AddCodec(codecInfo)
 			}
