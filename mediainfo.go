@@ -303,9 +303,6 @@ func (m *MediaInfo) AnswerCapability(cap *Capability) *MediaInfo {
 			if supported.GetCodec() == "h264" && supported.HasParam("profile-level-id") && supported.GetParam("profile-level-id") != codec.GetParam("profile-level-id") {
 				continue
 			}
-			if supported.GetRate() != codec.GetRate() {
-				continue
-			}
 			cloned := supported.Clone()
 			cloned.SetPayload(codec.GetPayload())
 			if cloned.HasRTX() {
