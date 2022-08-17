@@ -80,6 +80,10 @@ func (c *CodecInfo) GetRate() int {
 	return c.rate
 }
 
+func (c *CodecInfo) SetRate(rate int) {
+	c.rate = rate
+}
+
 func (c *CodecInfo) GetParam(key string) string {
 	if c.HasParam(key) {
 		return c.params[key]

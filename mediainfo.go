@@ -308,6 +308,7 @@ func (m *MediaInfo) AnswerCapability(cap *Capability) *MediaInfo {
 			if cloned.HasRTX() {
 				cloned.SetRTX(codec.GetRTX())
 			}
+			cloned.SetRate(codec.GetRate())
 			cloned.AddParams(codec.GetParams())
 			answer.AddCodec(cloned)
 		}
