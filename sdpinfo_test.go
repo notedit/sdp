@@ -113,10 +113,10 @@ const sdpstr = "v=1\r\n" +
 
 var Capabilities = map[string]*Capability{
 	"audio": &Capability{
-		Codecs: []string{"opus"},
+		Codecs: []string{"opus/48000"},
 	},
 	"video": &Capability{
-		Codecs: []string{"vp8"},
+		Codecs: []string{"vp8/90000"},
 		Rtx:    true,
 		Rtcpfbs: []*RtcpFeedback{
 			&RtcpFeedback{

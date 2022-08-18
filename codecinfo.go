@@ -1,6 +1,7 @@
 package sdp
 
 import (
+	"strconv"
 	"strings"
 )
 
@@ -10,9 +11,10 @@ type CodecInfo struct {
 	rtx     int
 	params  map[string]string
 	rtcpfbs []*RTCPFeedbackInfo
+	rate    int
 }
 
-func NewCodecInfo(codec string, payload int) *CodecInfo {
+func NewCodecInfo(codec string, payload int, rate int) *CodecInfo {
 
 	codecInfo := &CodecInfo{
 		codec:   codec,
@@ -20,6 +22,7 @@ func NewCodecInfo(codec string, payload int) *CodecInfo {
 		rtx:     0,
 		params:  map[string]string{},
 		rtcpfbs: []*RTCPFeedbackInfo{},
+		rate:    rate,
 	}
 
 	return codecInfo
@@ -33,6 +36,7 @@ func (c *CodecInfo) Clone() *CodecInfo {
 		rtx:     c.rtx,
 		params:  make(map[string]string),
 		rtcpfbs: []*RTCPFeedbackInfo{},
+		rate:    c.rate,
 	}
 
 	for key, param := range c.params {
@@ -70,6 +74,14 @@ func (c *CodecInfo) HasParam(key string) bool {
 
 func (c *CodecInfo) GetCodec() string {
 	return c.codec
+}
+
+func (c *CodecInfo) GetRate() int {
+	return c.rate
+}
+
+func (c *CodecInfo) SetRate(rate int) {
+	c.rate = rate
 }
 
 func (c *CodecInfo) GetParam(key string) string {
@@ -121,8 +133,13 @@ func CodecMapFromNames(names []string, rtx bool, rtcpfbs []*RTCPFeedbackInfo) ma
 	for _, name := range names {
 
 		var pt int
+		var rate int
 		params := strings.Split(name, ";")
-		codecName := strings.TrimSpace(strings.ToLower(params[0]))
+		encoding := strings.Split(params[0], "/")
+		codecName := strings.TrimSpace(strings.ToLower(encoding[0]))
+		if len(encoding) == 2 {
+			rate, _ = strconv.Atoi(encoding[1])
+		}
 		if codecName == "pcmu" {
 			pt = 0
 		} else if codecName == "pcma" {
@@ -132,7 +149,7 @@ func CodecMapFromNames(names []string, rtx bool, rtcpfbs []*RTCPFeedbackInfo) ma
 			pt = basePt
 		}
 
-		codec := NewCodecInfo(codecName, pt)
+		codec := NewCodecInfo(codecName, pt, rate)
 
 		if rtx && codecName != "ulpfec" && codecName != "flexfec-03" && codecName != "red" {
 			basePt++
