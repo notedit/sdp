@@ -10,7 +10,7 @@ import (
 
 type SDPInfo struct {
 	version    int
-	streams    map[string]*StreamInfo
+	streams    []*StreamInfo
 	medias     []*MediaInfo     // as we need to keep order
 	candidates []*CandidateInfo // keep order
 	ice        *ICEInfo
@@ -22,7 +22,7 @@ func NewSDPInfo() *SDPInfo {
 
 	sdp := &SDPInfo{
 		version:    1,
-		streams:    map[string]*StreamInfo{},
+		streams:    []*StreamInfo{},
 		medias:     []*MediaInfo{},
 		candidates: []*CandidateInfo{},
 	}
@@ -160,10 +160,15 @@ func (s *SDPInfo) GetCandidates() []*CandidateInfo {
 
 func (s *SDPInfo) GetStream(id string) *StreamInfo {
 
-	return s.streams[id]
+	for _, v := range s.streams {
+		if id == v.GetID() {
+			return v
+		}
+	}
+	return nil
 }
 
-func (s *SDPInfo) GetStreams() map[string]*StreamInfo {
+func (s *SDPInfo) GetStreams() []*StreamInfo {
 
 	return s.streams
 }
@@ -177,15 +182,30 @@ func (s *SDPInfo) GetFirstStream() *StreamInfo {
 }
 
 func (s *SDPInfo) AddStream(stream *StreamInfo) {
-	s.streams[stream.GetID()] = stream
+
+	for idx, v := range s.streams {
+		if stream.GetID() == v.GetID() {
+			s.streams[idx] = stream
+			return
+		}
+	}
+
+	s.streams = append(s.streams, stream)
 }
 
 func (s *SDPInfo) RemoveStream(stream *StreamInfo) {
-	delete(s.streams, stream.GetID())
+
+	for idx, v := range s.streams {
+		if stream.GetID() == v.GetID() {
+			s.streams = append(s.streams[:idx], s.streams[idx+1:]...)
+			return
+		}
+	}
 }
 
 func (s *SDPInfo) RemoveAllStreams() {
-	s.streams = make(map[string]*StreamInfo)
+
+	s.streams = s.streams[:0]
 }
 
 func (s *SDPInfo) GetTrackByMediaID(mid string) *TrackInfo {
