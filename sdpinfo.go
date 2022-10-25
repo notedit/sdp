@@ -9,24 +9,22 @@ import (
 )
 
 type SDPInfo struct {
-	version      int
-	streams      map[string]*StreamInfo
-	orderStreams []*StreamInfo
-	medias       []*MediaInfo     // as we need to keep order
-	candidates   []*CandidateInfo // keep order
-	ice          *ICEInfo
-	dtls         *DTLSInfo
-	crypto       *CryptoInfo
+	version    int
+	streams    []*StreamInfo
+	medias     []*MediaInfo     // as we need to keep order
+	candidates []*CandidateInfo // keep order
+	ice        *ICEInfo
+	dtls       *DTLSInfo
+	crypto     *CryptoInfo
 }
 
 func NewSDPInfo() *SDPInfo {
 
 	sdp := &SDPInfo{
-		version:      1,
-		streams:      map[string]*StreamInfo{},
-		orderStreams: []*StreamInfo{},
-		medias:       []*MediaInfo{},
-		candidates:   []*CandidateInfo{},
+		version:    1,
+		streams:    []*StreamInfo{},
+		medias:     []*MediaInfo{},
+		candidates: []*CandidateInfo{},
 	}
 
 	return sdp
@@ -162,61 +160,52 @@ func (s *SDPInfo) GetCandidates() []*CandidateInfo {
 
 func (s *SDPInfo) GetStream(id string) *StreamInfo {
 
-	return s.streams[id]
+	for _, v := range s.streams {
+		if id == v.GetID() {
+			return v
+		}
+	}
+	return nil
 }
 
-func (s *SDPInfo) GetStreams() map[string]*StreamInfo {
+func (s *SDPInfo) GetStreams() []*StreamInfo {
 
 	return s.streams
 }
 
-func (s *SDPInfo) GetOrderStreams() []*StreamInfo {
-
-	return s.orderStreams
-}
-
 func (s *SDPInfo) GetFirstStream() *StreamInfo {
 
-	for _, stream := range s.orderStreams {
+	for _, stream := range s.streams {
 		return stream
 	}
 	return nil
 }
 
 func (s *SDPInfo) AddStream(stream *StreamInfo) {
-	_, ok := s.streams[stream.GetID()]
-	if ok { // exist
-		s.streams[stream.GetID()] = stream
-		for idx, v := range s.orderStreams {
-			if stream.GetID() == v.GetID() {
-				s.orderStreams[idx] = stream
-				return
-			}
+
+	for idx, v := range s.streams {
+		if stream.GetID() == v.GetID() {
+			s.streams[idx] = stream
+			return
 		}
-		return
 	}
 
-	s.streams[stream.GetID()] = stream
-	s.orderStreams = append(s.orderStreams, stream)
+	s.streams = append(s.streams, stream)
 }
 
 func (s *SDPInfo) RemoveStream(stream *StreamInfo) {
-	_, ok := s.streams[stream.GetID()]
-	if ok { // exist
-		for idx, v := range s.orderStreams {
-			if stream.GetID() == v.GetID() {
-				s.orderStreams = append(s.orderStreams[:idx], s.orderStreams[idx+1:]...)
-				return
-			}
+
+	for idx, v := range s.streams {
+		if stream.GetID() == v.GetID() {
+			s.streams = append(s.streams[:idx], s.streams[idx+1:]...)
+			return
 		}
 	}
-	delete(s.streams, stream.GetID())
-
 }
 
 func (s *SDPInfo) RemoveAllStreams() {
-	s.streams = make(map[string]*StreamInfo)
-	s.orderStreams = s.orderStreams[:0]
+
+	s.streams = s.streams[:0]
 }
 
 func (s *SDPInfo) GetTrackByMediaID(mid string) *TrackInfo {
@@ -245,7 +234,7 @@ func (s *SDPInfo) GetStreamByMediaID(mid string) *StreamInfo {
 func (s *SDPInfo) GetVideoTracks() []*TrackInfo {
 
 	tracks := []*TrackInfo{}
-	for _, stream := range s.orderStreams {
+	for _, stream := range s.streams {
 		for _, track := range stream.GetTracks() {
 			if strings.ToLower(track.GetMediaType()) == "video" {
 				tracks = append(tracks, track)
@@ -258,7 +247,7 @@ func (s *SDPInfo) GetVideoTracks() []*TrackInfo {
 func (s *SDPInfo) GetAudioTracks() []*TrackInfo {
 
 	tracks := []*TrackInfo{}
-	for _, stream := range s.orderStreams {
+	for _, stream := range s.streams {
 		for _, track := range stream.GetTracks() {
 			if strings.ToLower(track.GetMediaType()) == "audio" {
 				tracks = append(tracks, track)
@@ -609,7 +598,7 @@ func (s *SDPInfo) String() string {
 	}
 
 	// streams
-	for _, stream := range s.GetOrderStreams() {
+	for _, stream := range s.GetStreams() {
 		for _, track := range stream.GetTracks() {
 			for _, md := range sdpMap.Media {
 				// check if it is unified or plan b
@@ -685,7 +674,7 @@ func (s *SDPInfo) Clone() *SDPInfo {
 	for _, media := range s.GetMedias() {
 		cloned.AddMedia(media.Clone())
 	}
-	for _, stream := range s.GetOrderStreams() {
+	for _, stream := range s.GetStreams() {
 		cloned.AddStream(stream.Clone())
 	}
 	for _, candidate := range s.GetCandidates() {
@@ -717,7 +706,7 @@ func (s *SDPInfo) Unify() *SDPInfo {
 		"video": cloned.GetMediasByType("video"),
 	}
 
-	for _, stream := range s.orderStreams {
+	for _, stream := range s.streams {
 		clonedStream := stream.Clone()
 		for _, clonedTrack := range clonedStream.GetTracks() {
 			var clonedMedia *MediaInfo
@@ -1186,4 +1175,3 @@ func Parse(sdp string) (*SDPInfo, error) {
 
 	return sdpInfo, nil
 }
-
