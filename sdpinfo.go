@@ -385,12 +385,14 @@ func (s *SDPInfo) String() string {
 		mediaMap.IceUfrag = s.GetICE().GetUfrag()
 		mediaMap.IcePwd = s.GetICE().GetPassword()
 
-		mediaMap.Fingerprint = &transform.FingerprintStruct{
-			Type: s.GetDTLS().GetHash(),
-			Hash: s.GetDTLS().GetFingerprint(),
-		}
+		if s.GetDTLS() != nil {
+			mediaMap.Fingerprint = &transform.FingerprintStruct{
+				Type: s.GetDTLS().GetHash(),
+				Hash: s.GetDTLS().GetFingerprint(),
+			}
 
-		mediaMap.Setup = s.GetDTLS().GetSetup().String()
+			mediaMap.Setup = s.GetDTLS().GetSetup().String()
+		}
 
 		for _, codec := range media.GetCodecs() {
 
