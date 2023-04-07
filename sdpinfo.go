@@ -428,11 +428,28 @@ func (s *SDPInfo) String() string {
 			}
 
 			if codec.HasRTX() {
-				mediaMap.Rtp = append(mediaMap.Rtp, &transform.RtpStruct{
-					Payload: codec.GetRTX(),
-					Codec:   "rtx",
-					Rate:    90000,
-				})
+				if "video" == strings.ToLower(media.GetType()) {
+					mediaMap.Rtp = append(mediaMap.Rtp, &transform.RtpStruct{
+						Payload: codec.GetRTX(),
+						Codec:   "rtx",
+						Rate:    90000,
+					})
+				} else {
+					if "opus" == strings.ToLower(codec.GetCodec()) {
+						mediaMap.Rtp = append(mediaMap.Rtp, &transform.RtpStruct{
+							Payload:  codec.GetRTX(),
+							Codec:    "rtx",
+							Rate:     codec.GetRate(),
+							Encoding: 2,
+						})
+					} else {
+						mediaMap.Rtp = append(mediaMap.Rtp, &transform.RtpStruct{
+							Payload: codec.GetRTX(),
+							Codec:   "rtx",
+							Rate:    codec.GetRate(),
+						})
+					}
+				}
 				mediaMap.Fmtp = append(mediaMap.Fmtp, &transform.FmtpStruct{
 					Payload: codec.GetRTX(),
 					Config:  "apt=" + strconv.Itoa(codec.GetPayload()),
