@@ -77,7 +77,7 @@ type SsrcGroupStruct struct {
 }
 
 type SsrcStruct struct {
-	Id        uint `json:"id,omitempty"`
+	Id        uint   `json:"id,omitempty"`
 	Attribute string `json:"attribute,omitempty"`
 	Value     string `json:"value,omitempty"`
 }
@@ -158,11 +158,13 @@ type SdpStruct struct {
 	Media        []*MediaStruct      `json:"media,omitempty"`
 	Fingerprint  *FingerprintStruct  `json:"fingerprint,omitempty"`
 	Connection   *ConnectionStruct   `json:"connection,omitempty"`
+	IceUfrag     string              `json:"iceUfrag,omitempty"`
+	IcePwd       string              `json:"icePwd,omitempty"`
 	Icelite      string              `json:"icelite,omitempty"`
 }
 
 type SctpMapStuct struct {
-	Port           int       `json:"sctpmapNumber"`
-	App            string    `json:"app"`
-	MessageSize    int       `json:"maxMessageSize"`
+	Port        int    `json:"sctpmapNumber"`
+	App         string `json:"app"`
+	MessageSize int    `json:"maxMessageSize"`
 }

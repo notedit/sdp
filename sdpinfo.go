@@ -846,6 +846,12 @@ func Parse(sdp string) (*SDPInfo, error) {
 
 		ufrag := md.IceUfrag
 		pwd := md.IcePwd
+		if ufrag == "" && sdpMap.IceUfrag != "" {
+			ufrag = sdpMap.IceUfrag
+		}
+		if pwd == "" && sdpMap.IcePwd != "" {
+			pwd = sdpMap.IcePwd
+		}
 
 		sdpInfo.SetICE(NewICEInfo(ufrag, pwd))
 
