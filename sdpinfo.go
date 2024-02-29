@@ -395,7 +395,9 @@ func (s *SDPInfo) String() string {
 		}
 
 		for _, codec := range media.GetCodecs() {
-
+			if strings.ToLower(codec.GetCodec()) == "rsfec" {
+				continue
+			}
 			if "video" == strings.ToLower(media.GetType()) {
 				mediaMap.Rtp = append(mediaMap.Rtp, &transform.RtpStruct{
 					Payload: codec.GetPayload(),
@@ -480,6 +482,18 @@ func (s *SDPInfo) String() string {
 				}
 
 				mediaMap.Fmtp = append(mediaMap.Fmtp, fmtp)
+			}
+		}
+
+		for _, codec := range media.GetCodecs() {
+			if len(mediaMap.Rtp) > 0 && strings.ToLower(codec.GetCodec()) == "rsfec" {
+				mediaMap.Rtp = append(mediaMap.Rtp, &transform.RtpStruct{
+					Payload:  codec.GetPayload(),
+					Codec:    codec.GetCodec(),
+					Rate:     codec.GetRate(),
+					Encoding: codec.GetEncoding(),
+				})
+				break
 			}
 		}
 
@@ -938,6 +952,10 @@ func Parse(sdp string) (*SDPInfo, error) {
 					aptint, _ := strconv.Atoi(apt)
 					apts[aptint] = payload
 				}
+			} else if strings.ToUpper(codec) == "RSFEC" {
+				codecInfo := NewCodecInfo(codec, payload, rate)
+				codecInfo.SetEncoding(fmt.Encoding)
+				mediaInfo.AddCodec(codecInfo)
 			} else {
 				codecInfo := NewCodecInfo(codec, payload, rate)
 				codecInfo.AddParams(params)

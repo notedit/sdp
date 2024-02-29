@@ -6,12 +6,13 @@ import (
 )
 
 type CodecInfo struct {
-	codec   string
-	payload int
-	rtx     int
-	params  map[string]string
-	rtcpfbs []*RTCPFeedbackInfo
-	rate    int
+	codec    string
+	payload  int
+	rtx      int
+	params   map[string]string
+	rtcpfbs  []*RTCPFeedbackInfo
+	rate     int
+	encoding int
 }
 
 func NewCodecInfo(codec string, payload int, rate int) *CodecInfo {
@@ -31,12 +32,13 @@ func NewCodecInfo(codec string, payload int, rate int) *CodecInfo {
 func (c *CodecInfo) Clone() *CodecInfo {
 
 	codecInfo := &CodecInfo{
-		codec:   c.codec,
-		payload: c.payload,
-		rtx:     c.rtx,
-		params:  make(map[string]string),
-		rtcpfbs: []*RTCPFeedbackInfo{},
-		rate:    c.rate,
+		codec:    c.codec,
+		payload:  c.payload,
+		rtx:      c.rtx,
+		params:   make(map[string]string),
+		rtcpfbs:  []*RTCPFeedbackInfo{},
+		rate:     c.rate,
+		encoding: c.encoding,
 	}
 
 	for key, param := range c.params {
@@ -82,6 +84,14 @@ func (c *CodecInfo) GetRate() int {
 
 func (c *CodecInfo) SetRate(rate int) {
 	c.rate = rate
+}
+
+func (c *CodecInfo) GetEncoding() int {
+	return c.encoding
+}
+
+func (c *CodecInfo) SetEncoding(encoding int) {
+	c.encoding = encoding
 }
 
 func (c *CodecInfo) GetParam(key string) string {
@@ -134,11 +144,15 @@ func CodecMapFromNames(names []string, rtx bool, rtcpfbs []*RTCPFeedbackInfo) ma
 
 		var pt int
 		var rate int
+		var encParam int = 0
 		params := strings.Split(name, ";")
 		encoding := strings.Split(params[0], "/")
 		codecName := strings.TrimSpace(strings.ToLower(encoding[0]))
-		if len(encoding) == 2 {
+		if len(encoding) >= 2 {
 			rate, _ = strconv.Atoi(encoding[1])
+		}
+		if len(encoding) >= 3 {
+			encParam, _ = strconv.Atoi(encoding[2])
 		}
 		if codecName == "pcmu" {
 			pt = 0
@@ -150,6 +164,7 @@ func CodecMapFromNames(names []string, rtx bool, rtcpfbs []*RTCPFeedbackInfo) ma
 		}
 
 		codec := NewCodecInfo(codecName, pt, rate)
+		codec.SetEncoding(encParam)
 
 		if rtx && codecName != "ulpfec" && codecName != "flexfec-03" && codecName != "red" {
 			basePt++

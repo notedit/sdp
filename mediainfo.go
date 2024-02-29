@@ -309,6 +309,7 @@ func (m *MediaInfo) AnswerCapability(cap *Capability) *MediaInfo {
 				cloned.SetRTX(codec.GetRTX())
 			}
 			cloned.SetRate(codec.GetRate())
+			cloned.SetEncoding(codec.GetEncoding())
 			cloned.AddParams(codec.GetParams())
 			answer.AddCodec(cloned)
 		}
